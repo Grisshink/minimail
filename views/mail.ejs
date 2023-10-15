@@ -22,14 +22,14 @@
             </div>
         <% } else { %>
             <ul class="mail-list">
-                <% mail.toReversed().forEach((e, i) => { %>
+                <% for (let i = mail.length - 1; i >= 0; i--) { %>
                     <li>
-                        <a href="/mail/<%= mail.length - i - 1 %>">
-                            <div class="message"><strong>Сообщение:</strong> <%= e.message %> </div>
-                            <div><strong>От:</strong> <%= e.name %> | <i><%= new Date(e.timestamp).toLocaleString() %></i></div>
+                        <a href="/mail/<%= i %>">
+                            <div class="message"><strong>Сообщение:</strong> <%= mail[i].message %> </div>
+                            <div><strong>От:</strong> <%= mail[i].name %> | <i><%= new Date(mail[i].timestamp).toLocaleString() %></i></div>
                         </a>
                     </li>
-                <% }); %>
+                <% } %>
             </ul>
         <% } %> 
     </div>
