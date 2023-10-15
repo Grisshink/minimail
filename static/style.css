@@ -2,6 +2,8 @@ html {
     background-color: var(--background-color);
     color: var(--foreground-color);
     height: 100%;
+    font-family: monospace;
+    font-size: 14px;
 }
 
 body {
@@ -36,11 +38,13 @@ body {
     padding: 0.25em;
     margin: 0.2em 0;
     box-sizing: border-box;
+    font-family: inherit;
 }
 
 .inpus:focus {
     box-shadow: 0 0 5px var(--foreground-color);
     outline: 0;
+    font-family: inherit;
 }
 
 .container label {
@@ -108,7 +112,7 @@ a {
 }
 
 .message {
-    font-size: large;
+    font-size: 18px;
     word-break: keep-all;
     white-space: nowrap;
     text-overflow: ellipsis;
