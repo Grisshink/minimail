@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сообщение от <%= msg.name %></title>
+    <style>
+        :root {
+            --foreground-color: <%= color.foreground %>;
+            --background-color: <%= color.background %>;
+            --form-background:  <%= color.form %>;
+        }
+    </style>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="center">
+        <div class="restrict-content">
+            <h2>Сообщение от <%= msg.name %></h2>
+            <div class="container">
+                <p>Время: <i><%= new Date(msg.timestamp).toLocaleString() %></i></p>
+                <span>
+                    <%= msg.message.trim() %>
+
+                    - <%= msg.name %>
+                </span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

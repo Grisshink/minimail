@@ -1,0 +1,14 @@
+{
+    "mailboxName": "Unknown User",
+    "port": 3000,
+    "color": {
+        "foreground": "#39d9b1",
+        "background": "#1c2d16",
+        "form": "#111b0d"
+    },
+    "creds": {
+        "name": "admin",
+        "password": "superstrongpassword",
+        "defaultName": true
+    }
+}

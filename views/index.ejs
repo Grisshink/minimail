@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Написать <%= mailbox %></title>
+    <style>
+        :root {
+            --foreground-color: <%= color.foreground %>;
+            --background-color: <%= color.background %>;
+            --form-background:  <%= color.form %>;
+        }
+    </style>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="center">
+        <% if (created) { %>
+            <p>Сообщение успешно отправлено</p>
+        <% } %>
+
+        <% if (error) { %>
+            <p class="error">Произошла ошибка отправки сообщения!</p>
+        <% } %>
+
+        <div class="restrict-content">
+            <h2>Написать сообщение <%= mailbox %></h2>
+            <form action="/send" method="post" class="container">
+                <label for="name">Имя:</label>
+                <input type="text" id="name" class="inpus" name="username" required/>
+                <label for="msg">Текст сообщения:</label>
+                <textarea name="message" id="msg" rows="10" class="inpus" required></textarea>
+                <input type="submit" class="inpus" value="Отправить">
+            </form>
+        </div>
+        <p>Powered by Minimail. Github</p>
+    </div>
+</body>
+</html>

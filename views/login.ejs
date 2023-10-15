@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <style>
+        :root {
+            --foreground-color: <%= color.foreground %>;
+            --background-color: <%= color.background %>;
+            --form-background:  <%= color.form %>;
+        }
+    </style>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="center">
+        <% if (unauthorised) { %>
+            <p class="error">Неверный логин и/или пароль</p>
+        <% } %>
+
+        <% if (logout) { %>
+            <p>Выход из системы успешен</p>
+        <% } %>
+
+        <div class="restrict-content">
+            <h2>Вход</h2>
+            <form action="/login" method="post" class="container">
+                <label for="name">Логин:</label>
+                <input type="text" id="name" class="inpus" name="name" value="<%= defaultLogin %> " required>
+                <label for="password">Пароль:</label>
+                <input type="password" id="password" name="password" class="inpus" required>
+                <input type="submit" class="inpus" value="Отправить">
+            </form>
+        </div>
+        <p>Powered by Minimail. Github</p>
+    </div>
+</body>
+</html>

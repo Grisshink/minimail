@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сообщения</title>
+    <style>
+        :root {
+            --foreground-color: <%= color.foreground %>;
+            --background-color: <%= color.background %>;
+            --form-background:  <%= color.form %>;
+        }
+    </style>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="messages-container">
+        <h2>Сообщения</h2>
+        <% if (mail.length === 0) { %> 
+            <div class="container">
+                <p class="error">Кажется тут немного пустовато... Попробуйте отправить себе сообщение <a href="/">отсюда</a></p>
+            </div>
+        <% } else { %>
+            <ul class="mail-list">
+                <% mail.toReversed().forEach((e, i) => { %>
+                    <li>
+                        <a href="/mail/<%= mail.length - i - 1 %>">
+                            <div class="message"><strong>Сообщение:</strong> <%= e.message %> </div>
+                            <div><strong>От:</strong> <%= e.name %> | <i><%= new Date(e.timestamp).toLocaleString() %></i></div>
+                        </a>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } %> 
+    </div>
+</body>
+</html>
