@@ -148,7 +148,7 @@ app.route('/login')
 });
 
 app.use((req, res) => {
-    res.render('404', commonState);
+    res.status(404).render('404', commonState);
 });
 
 if (!process.env.STORE_SECRET_KEY) {
