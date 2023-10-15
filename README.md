@@ -3,7 +3,7 @@
 
 ## Установка и запуск
 
-Для работы с вебсервера нужно чтобы были установлены [NodeJS](https://nodejs.org) и [Git](https://git-scm.com/downloads). После чего склонируйте репозиторий:
+Для работы вебсервера нужно чтобы были установлены [NodeJS](https://nodejs.org) и [Git](https://git-scm.com/downloads). После чего склонируйте репозиторий:
 
 ```bash
 git clone https://github.com/Grisshink/minimail.git
@@ -26,7 +26,7 @@ STORE_SECRET_KEY=<ключ_сессий>
 npm start
 ```
 
-Для пользователей Windows таже предлагается файл `start.bat` для более удобного запуска сервера.
+Для пользователей Windows также предлагается файл `start.bat` для более удобного запуска сервера.
 
 ## Конфигурация
 
