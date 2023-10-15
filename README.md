@@ -8,6 +8,7 @@
 ```bash
 git clone https://github.com/Grisshink/minimail.git
 cd minimail
+npm install
 ```
 
 При первом запуске важно создать в папке с сервером файл `.env` и написать в него эту строку:
