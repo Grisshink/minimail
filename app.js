@@ -52,6 +52,8 @@ app.post('/send', (req, res) => {
             message: content.message,
             sound: true
         });
+        console.log(`${content.username} написал вам:`);
+        console.log(content.message.slice(0, 150));
     } catch (e) {
         res.status(500)
            .redirect('/?error=true');
@@ -72,6 +74,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('/mail/:id', (req, res) => {
+    if (req.session.user != config.creds.name || !req.session.success) {
+        res.redirect('/login');
+        return;
+    }
+
     let id = Number(req.params.id);
     let messageState = {
         color: config.color,
@@ -134,6 +141,10 @@ app.route('/login')
         req.session.success = true;
         res.redirect('/mail');
     });
+});
+
+app.use((req, res) => {
+    res.render('404', { color: config.color });
 });
 
 if (!process.env.STORE_SECRET_KEY) {
