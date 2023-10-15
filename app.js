@@ -7,6 +7,10 @@ const notifier = require('node-notifier');
 const app = express();
 
 const config = JSON.parse(fs.readFileSync('config.json').toString());
+const ONE_WEEK = 604800000
+const commonState = {
+    color: config.color
+};
 
 require('dotenv').config();
 
@@ -22,9 +26,9 @@ app.set('view engine', 'ejs');
 app.use(express.static('static'),
         express.urlencoded({ extended: true }),
         session({
-            cookie: { maxAge: 604800000 },
+            cookie: { maxAge: ONE_WEEK },
             store: new MemoryStore({
-                checkPeriod: 604800000
+                checkPeriod: ONE_WEEK
             }),
             resave: false,
             saveUninitialized: false,
@@ -67,8 +71,8 @@ app.get('/', (req, res) => {
     const rootState = {
         created: req.query.created ? true : false,
         error: req.query.error ? true : false,
-        color: config.color,
         mailbox: config.mailboxName,
+        ...commonState
     };
     res.render('index', rootState);
 });
@@ -81,8 +85,8 @@ app.get('/mail/:id', (req, res) => {
 
     let id = Number(req.params.id);
     let messageState = {
-        color: config.color,
         msg: mail[id],
+        ...commonState
     };
 
     if (Number.isNaN(id) || !mail[id]) {
@@ -100,8 +104,8 @@ app.get('/mail', (req, res) => {
     }
 
     const mailState = {
-        color: config.color,
         mail: mail,
+        ...commonState
     };
     res.render('mail', mailState);
 });
@@ -115,10 +119,10 @@ app.get('/logout', (req, res) => {
 app.route('/login')
 .get((req, res) => {
     const loginState = {
-        color: config.color,
         unauthorised: req.query.unauthorised ? true : false,
         logout: req.query.logout ? true : false,
         defaultLogin: config.creds.defaultName ? config.creds.name : '',
+        ...commonState
     };
     res.render('login', loginState);
 })
@@ -144,7 +148,7 @@ app.route('/login')
 });
 
 app.use((req, res) => {
-    res.render('404', { color: config.color });
+    res.render('404', commonState);
 });
 
 if (!process.env.STORE_SECRET_KEY) {
