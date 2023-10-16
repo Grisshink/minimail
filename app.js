@@ -132,13 +132,13 @@ app.route('/login')
 })
 .post((req, res) => {
     const content = req.body;
-    console.log('Got login');
-    console.log(content);
     if (!content.name || 
         !content.password || 
         content.name.trim() != config.creds.name.trim() || 
         content.password.trim() != config.creds.password.trim())
     {
+        console.log('Got incorrect login');
+        console.log(content);
         res.status(401)
            .redirect('/login?unauthorised=true');
         return;
