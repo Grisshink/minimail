@@ -51,11 +51,15 @@ app.post('/send', (req, res) => {
 
     try {
         fs.writeFileSync('mail.json', JSON.stringify(mail));
-        notifier.notify({
-            title: `${content.username} написал`,
-            message: content.message,
-            sound: true
-        });
+
+        if (config.enableNotifications) {
+            notifier.notify({
+                title: `${content.username} написал`,
+                message: content.message,
+                sound: true
+            });
+        }
+
         console.log(`${content.username} написал вам:`);
         console.log(content.message.slice(0, 150));
     } catch (e) {

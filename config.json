@@ -1,6 +1,7 @@
 {
     "mailboxName": "Unknown User",
     "port": 3000,
+    "enableNotifications": true,
     "color": {
         "foreground": "#39d9b1",
         "background": "#1c2d16",
