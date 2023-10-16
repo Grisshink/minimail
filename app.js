@@ -3,6 +3,7 @@ const session = require('express-session')
 const MemoryStore = require('memorystore')(session)
 const fs = require('fs');
 const notifier = require('node-notifier');
+const helmet = require('helmet');
 
 const app = express();
 
@@ -23,7 +24,8 @@ try {
 }
 
 app.set('view engine', 'ejs');
-app.use(express.static('static'),
+app.use(helmet(),
+        express.static('static'),
         express.urlencoded({ extended: true }),
         session({
             cookie: { maxAge: ONE_WEEK },
