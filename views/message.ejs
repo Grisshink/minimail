@@ -14,12 +14,15 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+    <% if (loggedIn) { %>
+        <%- include('nav') -%> 
+    <% } %>
     <div class="center">
         <div class="restrict-content">
             <h2>Сообщение от <%= msg.name %></h2>
             <div class="container">
                 <p>Время: <i><%= new Date(msg.timestamp).toLocaleString() %></i></p>
-                <span>
+                <span class="message-content">
                     <%= msg.message.trim() %>
 
                     - <%= msg.name %>

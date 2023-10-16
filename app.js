@@ -1,31 +1,57 @@
 const express = require('express');
 const session = require('express-session')
-const MemoryStore = require('memorystore')(session)
 const fs = require('fs');
 const notifier = require('node-notifier');
-const helmet = require('helmet');
+
+const MemoryStore = require('memorystore')(session)
 
 const app = express();
 
 const config = JSON.parse(fs.readFileSync('config.json').toString());
 const ONE_WEEK = 604800000
 const commonState = {
-    color: config.color
+    color: config.color,
 };
 
 require('dotenv').config();
 
-let mail;
-try {
-    mail = JSON.parse(fs.readFileSync('mail.json').toString());
-} catch (e) {
-    mail = [];
+let mail = readFileOrDefault('mail.json', []);
+let contacts = readFileOrDefault('contacts.json', []);
+
+function readFileOrDefault(filename = '', defaultValue) {
+    let data = defaultValue;
+
+    try {
+        data = JSON.parse(fs.readFileSync(filename).toString());
+    } catch (e) {
+        fs.writeFileSync(filename, JSON.stringify(data));
+    }
+
+    return data;
+}
+
+function isLoggedIn(req) {
+    return req.session.user == config.creds.name && req.session.success;
+}
+
+function addMail(data) {
+    mail.push(data);
     fs.writeFileSync('mail.json', JSON.stringify(mail));
+
+    if (config.enableNotifications) {
+        notifier.notify({
+            title: `${data.name} написал`,
+            message: data.message,
+            sound: true
+        });
+    }
+
+    console.log(`${data.name} написал вам:`);
+    console.log(data.message.slice(0, 150));
 }
 
 app.set('view engine', 'ejs');
-app.use(helmet(),
-        express.static('static'),
+app.use(express.static('static'),
         express.urlencoded({ extended: true }),
         session({
             cookie: { maxAge: ONE_WEEK },
@@ -40,33 +66,18 @@ app.use(helmet(),
 app.post('/send', (req, res) => {
     const content = req.body;
     if (!content.username || !content.message) {
-        res.status(400)
-           .redirect('/?error=true');
+        res.redirect(400, '/?error=true');
         return;
     }
 
-    mail.push({
-        name: content.username,
-        message: content.message,
-        timestamp: new Date().toISOString(),
-    });
-
     try {
-        fs.writeFileSync('mail.json', JSON.stringify(mail));
-
-        if (config.enableNotifications) {
-            notifier.notify({
-                title: `${content.username} написал`,
-                message: content.message,
-                sound: true
-            });
-        }
-
-        console.log(`${content.username} написал вам:`);
-        console.log(content.message.slice(0, 150));
+        addMail({
+            name: content.username,
+            message: content.message,
+            timestamp: new Date().toISOString()
+        });
     } catch (e) {
-        res.status(500)
-           .redirect('/?error=true');
+        res.redirect(500, '/?error=true');
         return;
     }
 
@@ -77,21 +88,23 @@ app.get('/', (req, res) => {
     const rootState = {
         created: req.query.created ? true : false,
         error: req.query.error ? true : false,
-        mailbox: config.mailboxName,
+        mailbox: req.query.targetName || config.mailboxName,
+        loggedIn: isLoggedIn(req),
         ...commonState
     };
     res.render('index', rootState);
 });
 
 app.get('/mail/:id', (req, res) => {
-    if (req.session.user != config.creds.name || !req.session.success) {
-        res.redirect('/login');
+    if (!isLoggedIn(req)) {
+        res.setHeader('Refresh', '0; /login').sendStatus(401);
         return;
     }
 
     let id = Number(req.params.id);
     let messageState = {
         msg: mail[id],
+        loggedIn: true,
         ...commonState
     };
 
@@ -104,16 +117,83 @@ app.get('/mail/:id', (req, res) => {
 });
 
 app.get('/mail', (req, res) => {
-    if (req.session.user != config.creds.name || !req.session.success) {
-        res.redirect('/login');
+    if (!isLoggedIn(req)) {
+        res.setHeader('Refresh', '0; /login').sendStatus(401);
         return;
     }
 
     const mailState = {
         mail: mail,
+        loggedIn: true,
         ...commonState
     };
     res.render('mail', mailState);
+});
+
+app.get('/contacts', (req, res) => {
+    if (!isLoggedIn(req)) {
+        res.setHeader('Refresh', '0; /login').sendStatus(401);
+        return;
+    }
+
+    const contactsState = {
+        contacts: contacts,
+        loggedIn: true,
+        ...commonState
+    };
+    res.render('contacts', contactsState);
+});
+
+app.post('/contacts/delete', (req, res) => {
+    if (!isLoggedIn(req)) {
+        res.setHeader('Refresh', '0; /login').sendStatus(401);
+        return;
+    }
+
+    const content = req.body;
+    if (!content.number) {
+        res.sendStatus(400);
+        return;
+    }
+
+    contacts.splice(content.number, 1);
+    fs.writeFileSync('contacts.json', JSON.stringify(contacts));
+
+    res.redirect('/contacts');
+});
+
+app.route('/contacts/new')
+.get((req, res) => {
+    if (!isLoggedIn(req)) {
+        res.setHeader('Refresh', '0; /login').sendStatus(401);
+        return;
+    }
+
+    const newContactState = {
+        loggedIn: true,
+        error: req.query.error || false,
+        ...commonState
+    };
+    res.render('new-contact', newContactState);
+})
+.post((req, res) => {
+    if (!isLoggedIn(req)) {
+        res.setHeader('Refresh', '0; /login').sendStatus(401);
+        return;
+    }
+    const content = req.body;
+    if (!content.username || !content.url) {
+        res.status(400).redirect('/contacts/new?error=true');
+        return;
+    }
+
+    contacts.push({
+        name: content.username,
+        url: content.url
+    });
+    fs.writeFileSync('contacts.json', JSON.stringify(contacts));
+
+    res.redirect('/contacts');
 });
 
 app.get('/logout', (req, res) => {
@@ -128,6 +208,7 @@ app.route('/login')
         unauthorised: req.query.unauthorised ? true : false,
         logout: req.query.logout ? true : false,
         defaultLogin: config.creds.defaultName ? config.creds.name : '',
+        loggedIn: isLoggedIn(req),
         ...commonState
     };
     res.render('login', loginState);
@@ -141,8 +222,7 @@ app.route('/login')
     {
         console.log('Got incorrect login');
         console.log(content);
-        res.status(401)
-           .redirect('/login?unauthorised=true');
+        res.setHeader('Refresh', '0; /login?unauthorised=true').sendStatus(401);
         return;
     }
 
@@ -154,7 +234,7 @@ app.route('/login')
 });
 
 app.use((req, res) => {
-    res.status(404).render('404', commonState);
+    res.status(404).render('404', { loggedIn: isLoggedIn(req), ...commonState});
 });
 
 if (!process.env.STORE_SECRET_KEY) {

@@ -24,7 +24,8 @@
   },
   "nodemonConfig": {
     "ignore": [
-      "mail.json"
+      "mail.json",
+      "contacts.json"
     ]
   }
 }

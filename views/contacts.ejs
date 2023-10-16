@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        :root {
+            --foreground-color: <%= color.foreground %>;
+            --background-color: <%= color.background %>;
+            --form-background:  <%= color.form %>;
+        }
+    </style>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <% if (loggedIn) { %>
+        <%- include('nav') -%> 
+    <% } %>
+    <div class="messages-container">
+        <h2>Контакты <a href="/contacts/new">[Добавить]</a></h2>
+        <% if (contacts.length === 0) { %>
+            <div class="container">
+                <p class="error">Похоже что тут нет контактов. Попробуйте добавить один при помощи кнопки выше</p>
+            </div>
+        <% } else { %>
+            <ul class="mail-list">
+                <% for (let i = contacts.length - 1; i >= 0; i--) { %>
+                    <li>
+                        <a href="<%= contacts[i].url %>">
+                            <div class="message"><strong><%= contacts[i].name %></strong></div>
+                            <div>
+                                <strong>На: </strong> <%= contacts[i].url %>
+                                <form method="post" action="/contacts/delete" class="inline">
+                                    <button type="submit" name="number" value="<%= i %>" class="link-button">
+                                        Удалить
+                                    </button>
+                                </form>
+                            </div>
+                        </a>
+                    </li>
+                <% } %>
+            </ul>
+        <% } %>
+    </div>
+</body>
+</html>
