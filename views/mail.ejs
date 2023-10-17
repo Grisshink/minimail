@@ -14,6 +14,9 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+    <% if (loggedIn) { %>
+        <%- include('nav') -%> 
+    <% } %>
     <div class="messages-container">
         <h2>Сообщения</h2>
         <% if (mail.length === 0) { %> 

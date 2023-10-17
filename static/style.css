@@ -8,7 +8,9 @@ html {
 
 body {
     margin: 0;
-    /*height: 100%;*/
+    height: 100%;
+    display: flex;
+    flex-flow: column;
 }
 
 .error {
@@ -35,6 +37,7 @@ body {
     transition: box-shadow 0.2s;
     width: 100%;
     max-width: 100%;
+    max-height: 50em;
     padding: 0.25em;
     margin: 0.2em 0;
     box-sizing: border-box;
@@ -55,7 +58,7 @@ body {
 .center {
     width: 100%;
     height: 100%;
-    position: absolute;
+    margin: 1em 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -83,6 +86,10 @@ h2 {
 
 a {
     color: var(--foreground-color);
+}
+
+h2 a {
+    color: var(--background-color);
 }
 
 .mail-list {
@@ -119,14 +126,66 @@ a {
     overflow: hidden;
 }
 
-.messages-container {
-    margin: 1em 1em 0 1em;
+.inline {
+    display: inline;
 }
 
-span {
+.messages-container {
+    margin: 1em;
+}
+
+.message-content {
     border: 1px solid var(--foreground-color);
     padding: 0.5em;
     margin-top: 0.5em;
     white-space: pre-line;
     word-break: break-all;
+}
+
+.logo {
+    font-weight: 600;
+    font-size: 20px;
+    padding: 0 1.25em;
+    text-shadow: 0 0 5px var(--foreground-color);
+    vertical-align: middle;
+    color: var(--foreground-color);
+    margin: 0;
+    text-decoration: none;
+    background: linear-gradient(90deg, var(--form-background) 85%, var(--foreground-color));
+}
+
+.link-button {
+    background: none;
+    border: none;
+    color: var(--foreground-color);
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 1em;
+    font-family: inherit;
+}
+.link-button:hover {
+    text-shadow: 0 0 5px var(--foreground-color);
+}
+
+nav {
+    background-color: var(--foreground-color);
+    color: var(--background-color);
+    padding: 0;
+    /*padding: 1em;*/
+    display: flex;
+    align-items: center;
+}
+
+.nav-right {
+    width: 100%;
+    display: flex;
+    justify-content: end;
+}
+
+nav a {
+    color: var(--background-color);
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0.5em;
+    vertical-align: middle;
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Написать <%= mailbox %></title>
+    <title>Document</title>
     <style>
         :root {
             --foreground-color: <%= color.foreground %>;
@@ -18,25 +18,20 @@
         <%- include('nav') -%> 
     <% } %>
     <div class="center">
-        <% if (created) { %>
-            <p>Сообщение успешно отправлено</p>
-        <% } %>
-
         <% if (error) { %>
-            <p class="error">Произошла ошибка отправки сообщения!</p>
+            <p class="error">Произошла ошибка создания аккаунта!</p>
         <% } %>
 
         <div class="restrict-content">
-            <h2>Написать сообщение <%= mailbox %></h2>
-            <form action="/send" method="post" class="container">
+            <h2>Новый контакт</h2>
+            <form action="/contacts/new" method="post" class="container">
                 <label for="name">Имя:</label>
                 <input type="text" id="name" class="inpus" name="username" required/>
-                <label for="msg">Текст сообщения:</label>
-                <textarea name="message" id="msg" rows="10" class="inpus" required></textarea>
-                <input type="submit" class="inpus" value="Отправить">
+                <label for="url">URL контакта:</label>
+                <input type="url" name="url" id="url" class="inpus" required>
+                <input type="submit" class="inpus" value="Добавить">
             </form>
         </div>
-        <p>Powered by Minimail. <a href="https://github.com/Grisshink/minimail">Github</a></p>
     </div>
 </body>
 </html>
