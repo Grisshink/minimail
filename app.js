@@ -34,6 +34,14 @@ function isLoggedIn(req) {
     return req.session.user == config.creds.name && req.session.success;
 }
 
+function checkLogin(req, res, next) {
+    if (!isLoggedIn(req)) {
+        res.setHeader('Refresh', '0; /login').sendStatus(401);
+        return;
+    }
+    next();
+}
+
 function addMail(data) {
     mail.push(data);
     fs.writeFileSync('mail.json', JSON.stringify(mail));
@@ -66,7 +74,7 @@ app.use(express.static('static'),
 app.post('/send', (req, res) => {
     const content = req.body;
     if (!content.username || !content.message) {
-        res.redirect(400, '/?error=true');
+        res.setHeader('Refresh', '0; /?error=true').sendStatus(400);
         return;
     }
 
@@ -77,7 +85,7 @@ app.post('/send', (req, res) => {
             timestamp: new Date().toISOString()
         });
     } catch (e) {
-        res.redirect(500, '/?error=true');
+        res.setHeader('Refresh', '0; /?error=true').sendStatus(500);
         return;
     }
 
@@ -95,12 +103,7 @@ app.get('/', (req, res) => {
     res.render('index', rootState);
 });
 
-app.get('/mail/:id', (req, res) => {
-    if (!isLoggedIn(req)) {
-        res.setHeader('Refresh', '0; /login').sendStatus(401);
-        return;
-    }
-
+app.get('/mail/:id', checkLogin, (req, res) => {
     let id = Number(req.params.id);
     let messageState = {
         msg: mail[id],
@@ -116,12 +119,7 @@ app.get('/mail/:id', (req, res) => {
     res.render('message', messageState);
 });
 
-app.get('/mail', (req, res) => {
-    if (!isLoggedIn(req)) {
-        res.setHeader('Refresh', '0; /login').sendStatus(401);
-        return;
-    }
-
+app.get('/mail', checkLogin, (req, res) => {
     const mailState = {
         mail: mail,
         loggedIn: true,
@@ -130,12 +128,7 @@ app.get('/mail', (req, res) => {
     res.render('mail', mailState);
 });
 
-app.get('/contacts', (req, res) => {
-    if (!isLoggedIn(req)) {
-        res.setHeader('Refresh', '0; /login').sendStatus(401);
-        return;
-    }
-
+app.get('/contacts', checkLogin, (req, res) => {
     const contactsState = {
         contacts: contacts,
         loggedIn: true,
@@ -144,12 +137,7 @@ app.get('/contacts', (req, res) => {
     res.render('contacts', contactsState);
 });
 
-app.post('/contacts/delete', (req, res) => {
-    if (!isLoggedIn(req)) {
-        res.setHeader('Refresh', '0; /login').sendStatus(401);
-        return;
-    }
-
+app.post('/contacts/delete', checkLogin, (req, res) => {
     const content = req.body;
     if (!content.number) {
         res.sendStatus(400);
@@ -163,12 +151,7 @@ app.post('/contacts/delete', (req, res) => {
 });
 
 app.route('/contacts/new')
-.get((req, res) => {
-    if (!isLoggedIn(req)) {
-        res.setHeader('Refresh', '0; /login').sendStatus(401);
-        return;
-    }
-
+.get(checkLogin, (req, res) => {
     const newContactState = {
         loggedIn: true,
         error: req.query.error || false,
@@ -176,14 +159,10 @@ app.route('/contacts/new')
     };
     res.render('new-contact', newContactState);
 })
-.post((req, res) => {
-    if (!isLoggedIn(req)) {
-        res.setHeader('Refresh', '0; /login').sendStatus(401);
-        return;
-    }
+.post(checkLogin, (req, res) => {
     const content = req.body;
     if (!content.username || !content.url) {
-        res.status(400).redirect('/contacts/new?error=true');
+        res.setHeader('Refresh', '0; /contacts/new?error=true').sendStatus(400);
         return;
     }
 
