@@ -22,7 +22,33 @@ const MemoryStore = require('memorystore')(session)
 
 const app = express();
 
-const config = JSON.parse(fs.readFileSync('config.json').toString());
+function deepUpdate(dest, src) {
+    for (const [key, value] of Object.entries(src)) {
+        if (typeof dest[key] === 'object' && typeof dest[key] === typeof src[key]) {
+            deepUpdate(dest[key], src[key]);
+            continue;
+        }
+        if (dest[key] === undefined) {
+            dest[key] = value;
+        }
+    }
+    return dest;
+};
+
+let config = (() => {
+    const parseConfig = filename => JSON.parse(fs.readFileSync(filename).toString());
+    const def = parseConfig('config.default.json');
+
+    try {
+        return deepUpdate(parseConfig('config.json'), def);
+    } catch (e) {
+        fs.copyFileSync('config.default.json', 'config.json', fs.constants.COPYFILE_EXCL);
+
+        console.error('config.json не найден. Создаю из config.default.json...');
+        console.log('Настоятельно рекомендую заглянуть в config.json и поменять некоторые вещи в нём, а пока, я отключаюсь');
+        process.exit(0);
+    }
+})();
 const ONE_WEEK = 604800000
 const commonState = {
     color: config.color,
